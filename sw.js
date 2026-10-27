@@ -1,6 +1,6 @@
 // Service Worker: alles vorab in den Cache, damit die App offline läuft.
 // Bei jeder neuen Version VERSION hochzählen, sonst bleibt der alte Stand auf dem Tablet.
-const VERSION = 'wortbiester-v2';
+const VERSION = 'wortbiester-v3';
 const DATEIEN = [
   './', './index.html', './styles.css', './manifest.webmanifest',
   './js/app.js', './js/store.js', './js/sicherung.js', './js/audio.js',

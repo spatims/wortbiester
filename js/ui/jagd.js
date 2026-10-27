@@ -709,7 +709,7 @@ function baue(root, ctx, lebendig) {
     eiOffen = eggs.map((r) => eiSymbol(r));
     eiHinweis = el('p', {
       class: 'hinweis',
-      text: eggs.length ? 'Eier warten im Beutel.' : (coins ? 'Die Münzen warten im Beutel.' : 'Der Beutel ist leer.'),
+      text: `Im Beutel: ${coins} Münzen und ${eggs.length} ${eggs.length === 1 ? 'Ei' : 'Eier'}.`,
     });
     buehne.replaceChildren(el('div', { class: 'lager' }, [
       el('div', { class: 'feuer-bild', aria: { hidden: 'true' } }, [
@@ -719,12 +719,13 @@ function baue(root, ctx, lebendig) {
       el('p', { class: 'zahl', text: `${coins} Münzen` }),
       eggs.length ? el('div', { class: 'ei-reihe' }, eiOffen) : null,
       eiHinweis,
+      el('p', { text: 'Sind alle Schilde weg, verlierst du nur die Beute im Beutel. Dein Lernstand bleibt.' }),
     ]));
     antwort.replaceChildren(
-      knopfMitTon('Beute sichern', { art: 'primaer', onClick: () => feuerWahl('sichern') }),
+      knopfMitTon('Beute sichern', { art: 'primaer', unterzeile: 'Münzen und Eier aus dem Beutel sind sicher. Du spielst weiter.', onClick: () => feuerWahl('sichern') }),
       knopf('Weiter mit Einsatz', {
         art: 'sekundaer',
-        unterzeile: '×1,5 Beute, aber kein Schild zurück',
+        unterzeile: 'Beute bleibt im Beutel. Für richtige Antworten gibt es ab jetzt 50 % mehr Münzen – bis zum Ende der Jagd.',
         onClick: () => { if (!klickErlaubt() || gesperrt) return; ton('tipp'); feuerWahl('weiter'); },
       }),
     );
@@ -847,9 +848,12 @@ function baue(root, ctx, lebendig) {
     root.replaceChildren(el('section', { class: 'bildschirm ergebnis' }, [
       el('h1', { text: titel(summary) }),
       verlorenText ? el('p', { text: verlorenText }) : null,
+      el('h2', { text: 'Deine Wörter' }),
+      el('p', { text: 'Für jedes Wort zählt dein erster Versuch ohne Hilfe: richtig bringt es eine Stufe höher, falsch eine Stufe zurück. Nur angeschaut oder mit Hilfe? Dann bleibt die Stufe gleich.' }),
       listeWorte,
+      (geschluepft || []).length ? el('h2', { text: 'Aus deinen Eiern' }) : null,
       neues,
-      el('p', { class: 'zahl', text: `${summary?.coins || 0} Münzen` }),
+      el('p', { class: 'zahl', text: `${summary?.coins || 0} Münzen gesichert` }),
       el('p', { text: `Kombo-Rekord ${summary?.komboRekord || 0}` }),
       el('p', { text: fackelZeile(stand.fackel?.reihe || 0) }),
       aktionen,

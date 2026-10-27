@@ -99,6 +99,33 @@ test('drei Richtige in Folge geben einen Schild zurück', () => {
   assert.equal(hunt.state().shields, 3);
 });
 
+test('Einsatz erhöht spätere Münzen auch nach dem Sichern und verhindert keine Schild-Rückgabe', () => {
+  const hunt = createHunt({ specs: specsFor(16, 0), bossSpecs: () => [], taskFactory: stubFactory, rng: () => 0.9 });
+  hunt.start();
+  hunt.answer({ correct: false });
+  hunt.finishNachbau();
+  for (let i = 0; i < 3; i++) hunt.answer({ correct: true });
+  const bag = hunt.state().bag.coins;
+  assert.equal(hunt.state().phase, 'lagerfeuer');
+  hunt.campfire('weiter');
+  assert.equal(hunt.state().bag.coins, bag);
+  assert.equal(hunt.state().safe.coins, 0);
+  let ev = hunt.answer({ correct: true });
+  assert.equal(ev.find(e => e.type === 'richtig').coins, coinsFor(0, hunt.state().mult, { stake: true }));
+  for (let i = 0; i < 3; i++) hunt.answer({ correct: true });
+  assert.equal(hunt.state().phase, 'lagerfeuer');
+  const before = hunt.state().bag.coins;
+  hunt.campfire('sichern');
+  assert.equal(hunt.state().safe.coins, before);
+  assert.equal(hunt.state().bag.coins, 0);
+  assert.equal(hunt.state().stake, true);
+  hunt.answer({ correct: false });
+  hunt.finishNachbau();
+  for (let i = 0; i < 3; i++) ev = hunt.answer({ correct: true });
+  assert.ok(types(ev).includes('schild-zurueck'));
+  assert.equal(ev.find(e => e.type === 'richtig').coins, coinsFor(0, hunt.state().mult, { stake: true }));
+});
+
 test('ohne Schilde bricht die Jagd ab: ungesicherte Beute weg, gesicherte bleibt, Lernstand bleibt', () => {
   const hunt = createHunt({ specs: specsFor(16), bossSpecs: () => [], taskFactory: stubFactory, rng: seeded(4) });
   hunt.start();

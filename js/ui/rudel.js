@@ -69,6 +69,8 @@ function zeichne() {
   }
   rootEl.replaceChildren(el('section', { class: 'bildschirm rudel' }, [
     kopf(zaehlerText(stand)),
+    el('p', { text: 'Übe Wörter auf Jagden, damit ihre Biester wachsen. Tippe ein Biest an, um es anzusehen.' }),
+    el('p', { text: 'Bis zu drei gefangene Wortbiester können dich begleiten. Zahme Begleiter helfen dir auf der Jagd.' }),
     el('div', { class: 'filter-zeile' }, [filter]),
     liste,
   ]));
@@ -119,7 +121,7 @@ function kachelWort(wort, biest, liste, dabei) {
     dabei ? el('span', { class: 'kachel-dabei', text: 'dabei' }) : null,
   ]);
   const hungrig = biest.hungrig ? ', hungrig' : '';
-  button.setAttribute('aria-label', biest.gefangen ? `${wort.en}, ${stufe}${hungrig}` : `Noch nicht gefangen${hungrig}`);
+  button.setAttribute('aria-label', biest.gefangen ? `${wort.en}, ${stufe}${hungrig}${dabei ? ', als Begleiter dabei' : ''}` : `Noch nicht gefangen${hungrig}`);
   const bild = button.querySelector('canvas');
   if (bild) bild.setAttribute('aria-hidden', 'true');
   return button;
@@ -189,6 +191,7 @@ function fuelleGefangen(koerper, wort, biest, anziehen) {
   koerper.append(el('p', { text: schlafSatz(ctx.store.record(wort)) }));
   const vorteil = ctx.biester.describePerk?.(ctx.biester.perkFor?.(biest)) || '';
   if (vorteil) koerper.append(el('p', { text: vorteil }));
+  else koerper.append(el('p', { text: 'Wenn dieses Biest zahm ist und dich begleitet, hilft es dir auf der Jagd.' }));
   const getragen = getragenText(biest);
   if (getragen) koerper.append(el('p', { text: getragen }));
   const ids = ctx.store.state().begleiter || [];
