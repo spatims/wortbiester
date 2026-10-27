@@ -13,7 +13,16 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main id="app" aria-live="polite"></main>
+  <main id="app" aria-live="polite">
+    <p id="laden" style="margin:auto;font-family:Nunito,system-ui,sans-serif;font-size:1.25rem;opacity:.7">Wortbiester lädt …</p>
+  </main>
   <script type="module" src="js/app.js"></script>
+  <script>
+    // Bleibt der Ladehinweis stehen, konnte die App nicht starten (fehlende Datei, alter Browser).
+    setTimeout(() => {
+      const p = document.getElementById('laden');
+      if (p) p.textContent = 'Wortbiester konnte nicht starten. Lade die Seite neu oder sag einem Erwachsenen Bescheid.';
+    }, 4000);
+  </script>
 </body>
 </html>

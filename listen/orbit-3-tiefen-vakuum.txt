@@ -1,0 +1,10 @@
+# Wortbiester-Liste: Sektor 3: Tiefen-Vakuum
+# übernommen aus Tiefenwort: Orbit (Oktober 2026)
+knowledge - das Wissen | The cosmic library contains vast ______.
+compass - der Kompass | Follow the star ______ to jump to hyperspace.
+gravity - die Schwerkraft | Zero ______ makes astronauts float in space.
+orbit - die Umlaufbahn | The space station is in a stable ______.
+shield - der Schutzschild | Raise the deflector ______ against laser fire!
+galaxy - die Galaxie | The Milky Way is our home ______.
+asteroid - der Asteroid | Dodge that giant ______ coming from the left!
+signal - das Signal / der Funkspruch | We received an SOS ______ from sector 9.
