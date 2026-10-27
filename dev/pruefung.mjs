@@ -18,7 +18,7 @@ mkdirSync(out, { recursive: true });
 const port = 9000 + Math.floor(Math.random() * 500);
 const chrome = spawn('chromium', [
   '--headless=new', '--no-sandbox', '--disable-gpu', `--remote-debugging-port=${port}`,
-  '--user-data-dir=' + out + '/profil', '--no-first-run', 'about:blank',
+  '--user-data-dir=' + out + '/profil', '--no-first-run', ...(process.env.FLAGS ? process.env.FLAGS.split(' ') : []), 'about:blank',
 ], { stdio: 'ignore' });
 process.on('exit', () => chrome.kill());
 

@@ -1,0 +1,1 @@
+[ { "js": "new Promise(r=>{const f=()=>{const v=speechSynthesis.getVoices();if(v.length){console.error('STIMMEN:',v.length,v.filter(x=>/^en/i.test(x.lang)).map(x=>x.name+' '+x.lang).slice(0,4).join(' | '));r(1)}};speechSynthesis.onvoiceschanged=f;f();setTimeout(()=>{console.error('STIMMEN nach 3 s:',speechSynthesis.getVoices().length);r(0)},3000)})" } ]
