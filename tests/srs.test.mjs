@@ -73,6 +73,23 @@ test('kleine Liste ohne ältere Wörter füllt sinnvoll auf und bricht nicht', (
   assert.equal(specs.filter((s) => s.type === 'kennenlernen').length, 3);
 });
 
+test('frische Liste nur mit neuen Wörtern füllt die Jagd trotzdem auf 16: dritte Aufgabe (Silben), dann weitere Paare', () => {
+  const cur = words('a', ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']);
+  const older = words('b', ['alt1', 'alt2', 'alt3', 'alt4', 'alt5', 'alt6']);
+  const seen = { box: 2, due: 0, seen: 3, right: 3, wrong: 0 };
+  const { specs } = srs.pickHunt({ cur, older, rec: (w) => (w.list === 'b' ? seen : null), target: 16, now: 1e12, rng: seeded(4) });
+  assert.equal(specs.length, 16);
+  const kennen = specs.filter((s) => s.type === 'kennenlernen');
+  assert.ok(kennen.length >= 4 && kennen.length <= 6, `neue Wörter: ${kennen.length}`);
+  assert.ok(specs.some((s) => s.type === 'silben' && s.box === 0), 'dritte Aufgabe zu einem neuen Wort ist Silben bauen');
+  // Kennenlernen bleibt direkt vor seiner Wahl
+  specs.forEach((s, i) => { if (s.type === 'kennenlernen') { assert.equal(specs[i + 1].wordId, s.wordId); assert.equal(specs[i + 1].type, 'wahl'); } });
+  // Silben-Aufgabe eines neuen Wortes kommt nach seiner Wahl, nie davor
+  for (const s of specs.filter((x) => x.type === 'silben' && x.box === 0)) {
+    assert.ok(specs.findIndex((x) => x.wordId === s.wordId && x.type === 'wahl') < specs.indexOf(s), 'Silben vor der Wahl');
+  }
+});
+
 test('Boss nimmt Fehler-Wörter zuerst, dann die schwächsten, nie Kennenlernen', () => {
   const ws = words('a', ['one', 'two', 'three', 'four', 'five']);
   const recs = { 'a|one': { box: 5 }, 'a|two': { box: 0 }, 'a|three': { box: 3 }, 'a|four': { box: 1 } };

@@ -5,7 +5,7 @@ danach (braucht B für die Biest-Bilder, geht zur Not auch vorher nach Vertrag).
 
 | Paket | Datei | Erzeugt | Stand |
 |---|---|---|---|
-| A | `A-aufgaben.md` | `js/core/tasks.js`, `tests/tasks.test.mjs` | offen |
+| A | `A-aufgaben.md` | `js/core/tasks.js`, `tests/tasks.test.mjs` | abgenommen 27.10. |
 | B | `B-biester.md` | `js/core/biester.js`, `js/render/biest.js`, `tests/biester.test.mjs`, `dev/biester.html` | offen |
 | C1 | `C1-jagd-oberflaeche.md` | `js/ui/teile.js`, `js/ui/heute.js`, `js/ui/jagd.js`, `js/audio.js`, Erweiterung `styles.css` | offen |
 | C2 | `C2-rudel-laden-eltern.md` | `js/ui/rudel.js`, `js/ui/laden.js`, `js/ui/eltern.js`, Erweiterung `styles.css` | offen |

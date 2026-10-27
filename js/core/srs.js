@@ -109,6 +109,13 @@ export function pickHunt({ cur, older = [], rec, target = 16, now = Date.now(), 
       push(w);
     }
   }
+  // Reicht das nicht (z. B. frische Liste, nur neue Wörter): erst eine dritte Aufgabe zu den neuen
+  // Wörtern (Silben bauen), dann weitere neue Wörter als Paar, zuletzt eine dritte Runde der gewählten.
+  if (specsCur.length < nCur) {
+    for (const w of newSel) { if (specsCur.length >= nCur) break; push(w, 'silben', 0); }
+    for (const w of newCur.slice(nNew)) { if (nCur - specsCur.length < 2) break; push(w, 'kennenlernen', 0); push(w, 'wahl', 0); }
+    for (const w of chosen) { if (specsCur.length >= nCur) break; if ((occ[w.id] || 0) >= 3) continue; push(w); }
+  }
 
   // Kennenlernen direkt vor der Wahl lassen, den Rest mischen.
   const pairs = [];
@@ -117,7 +124,14 @@ export function pickHunt({ cur, older = [], rec, target = 16, now = Date.now(), 
   }
   shuffle(pairs, rng);
   // Gleiches Wort nie direkt hintereinander (soweit möglich).
-  const ordered = spread(pairs, (p) => p[0].wordId).flat();
+  const groups = spread(pairs, (p) => p[0].wordId);
+  // Das Kennenlernen-Paar kommt vor jeder weiteren Aufgabe desselben Wortes.
+  for (let i = 0; i < groups.length; i++) {
+    if (groups[i][0].type !== 'kennenlernen') continue;
+    const j = groups.findIndex((g) => g[0].wordId === groups[i][0].wordId && g[0].type !== 'kennenlernen');
+    if (j !== -1 && j < i) { [groups[i], groups[j]] = [groups[j], groups[i]]; i = j; }
+  }
+  const ordered = groups.flat();
 
   // Ältere Wörter gleichmäßig einstreuen, nicht als erste und nicht als letzte Aufgabe.
   const specs = [...ordered];
