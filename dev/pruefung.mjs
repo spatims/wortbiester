@@ -108,6 +108,16 @@ window.__wbLoese = async () => {
     else if (it.target) { for (const t of it.target) { klickBlock(t, benutzt); await pause(180); } await pause(900); }
   }
   return task.type;
+};
+window.__wbFalsch = async () => {
+  const hunt = window.wortbiester?.hunt; const st = hunt.state(); const task = st.task;
+  if (!task || task.type === 'kennenlernen') return 'nichts zu verfehlen (' + (task?.type || st.phase) + ')';
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+  const it = task.type === 'blitz' ? task.items[0] : task;
+  const alle = [...document.querySelectorAll('.block')].filter((b) => !b.disabled);
+  if (it.options) { const o = it.options.find((o) => !o.correct); const b = alle.find((b) => (b.innerText || '').trim() === o.text); b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); b.click(); }
+  else { for (let i = 0; i < 3; i++) { const b = [...document.querySelectorAll('.bank .block')].find((b) => !b.disabled && (b.innerText || '') !== it.target[0]); if (!b) break; b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); b.click(); await pause(250); } }
+  return 'falsch bei ' + task.type;
 };`;
 
 async function lauf(name, width, height, mobile) {
@@ -138,6 +148,7 @@ async function lauf(name, width, height, mobile) {
     if (s.js) await evaluate(s.js);
     if (s.warte) await sleep(s.warte);
     if (s.shot) await shot(`${s.shot}-${name}`);
+    if (s.falsch) { const r = await evaluate('__wbFalsch()'); console.log(`  ${name}: ${r}`); await sleep(300); }
     if (s.loese) { for (let i = 0; i < s.loese; i++) { const r = await evaluate('__wbLoese()'); console.log(`  ${name}: gelöst ${r}`); await sleep(500); } }
   }
   await shot(name);

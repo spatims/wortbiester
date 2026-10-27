@@ -17,7 +17,16 @@ export function mount(root, ctx) {
     root.append(el('section', { class: 'bildschirm heute' }, [
       el('div', { class: 'karte leer-karte' }, [
         el('h1', { text: 'Zuerst braucht ihr eine Wortliste' }),
-        knopf('Zu den Eltern', { art: 'primaer', className: 'start-knopf', onClick: () => ctx.go('eltern') }),
+        el('p', { class: 'hinweis', text: 'Eure eigene Liste legen die Eltern an. Zum Ausprobieren gibt es drei fertige Listen.' }),
+        knopf('Mit Beispiel-Listen starten', {
+          art: 'primaer', className: 'start-knopf',
+          onClick: async (ev) => {
+            const k = ev.currentTarget; if (k.disabled) return; k.disabled = true;
+            const n = await ctx.store.importBundledLists();
+            if (n > 0) ctx.go('heute'); else { k.disabled = false; k.querySelector('.knopf-text').textContent = 'Listen nicht gefunden'; }
+          },
+        }),
+        knopf('Zu den Eltern', { art: 'sekundaer', onClick: () => ctx.go('eltern') }),
       ]),
     ]));
     return;

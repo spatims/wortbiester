@@ -2,7 +2,7 @@
 // Dateien verlassen das Gerät nur, wenn jemand sie selbst speichert (sicherung.js).
 import { parseList } from './core/parser.js';
 import * as srs from './core/srs.js';
-import { uniqueListName } from './sicherung.js';
+import { uniqueListName, readListFile } from './sicherung.js';
 
 export const KEY = 'wortbiester.v1';
 export const PREVIOUS_KEY = 'wortbiester.v1.vorher';
@@ -185,3 +185,19 @@ export function finishHunt(summary, minutes, now = new Date()) {
 }
 
 export function setSetting(key, value) { st.settings[key] = value; save(); }
+
+// Mitgelieferte Listen (liegen als Dateien neben der App). Zum Einstieg ohne eigene Liste.
+export const BUNDLED_LISTS = ['listen/orbit-1-smaragd-nebel.txt', 'listen/orbit-2-magma-guertel.txt', 'listen/orbit-3-tiefen-vakuum.txt'];
+export async function importBundledLists(fetchFn = globalThis.fetch) {
+  let added = 0;
+  for (const path of BUNDLED_LISTS) {
+    try {
+      const res = await fetchFn(path);
+      if (!res.ok) continue;
+      const { name, text } = readListFile(await res.text(), path.split('/').pop());
+      if (st.lists.some((l) => l.name === name)) continue;
+      if (addList(name, text).ok) added++;
+    } catch { /* Datei fehlt oder offline: still überspringen */ }
+  }
+  return added;
+}

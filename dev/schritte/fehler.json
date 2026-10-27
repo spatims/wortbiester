@@ -1,0 +1,8 @@
+[
+  { "klick": "Jagd starten" }, { "warte": 900 }, { "loese": 1 },
+  { "falsch": 1 }, { "warte": 400 }, { "shot": "falsch-sofort" },
+  { "warte": 1400 }, { "shot": "loesung" },
+  { "warte": 2500 }, { "shot": "nachbau" },
+  { "loese": 1 }, { "warte": 800 }, { "shot": "nach-nachbau" },
+  { "klick": "Pause" }, { "warte": 400 }, { "shot": "pause" }
+]
