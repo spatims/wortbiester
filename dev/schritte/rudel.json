@@ -1,0 +1,3 @@
+[ { "klick": "Rudel" }, { "warte": 900 }, { "shot": "rudel" },
+  { "js": "(()=>{const k=[...document.querySelectorAll('button')].find(e=>/dangerous/.test(e.innerText||''));k&&k.click();return !!k})()" }, { "warte": 700 }, { "shot": "karte" },
+  { "klick": "Als Begleiter mitnehmen" }, { "warte": 500 }, { "shot": "begleiter" } ]

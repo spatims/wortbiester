@@ -1,0 +1,13 @@
+[
+  { "klick": "Rudel" }, { "warte": 900 }, { "shot": "rudel" },
+  { "js": "(()=>{const k=[...document.querySelectorAll('.block, button, .karte, [role=button]')].find(e=>/explore|treasure|dangerous/.test(e.innerText||''));k&&k.click();return !!k})()" }, { "warte": 700 }, { "shot": "rudel-karte" },
+  { "js": "window.wortbiester.go('heute')" }, { "warte": 500 },
+  { "klick": "Laden" }, { "warte": 900 }, { "shot": "laden" },
+  { "js": "window.wortbiester.go('heute')" }, { "warte": 500 },
+  { "klick": "Eltern" }, { "warte": 700 }, { "shot": "eltern-tor" },
+  { "js": "(()=>{const m=document.body.innerText.match(/(\\d+)\\s*([×x*+\\-−])\\s*(\\d+)/);if(!m)return 'keine Aufgabe';const a=+m[1],b=+m[3];const r=/[×x*]/.test(m[2])?a*b:m[2]==='+'?a+b:a-b;return __wbKlick(String(r));})()" }, { "warte": 800 }, { "shot": "eltern-listen" },
+  { "klick": "Fortschritt" }, { "warte": 600 }, { "shot": "eltern-fortschritt" },
+  { "klick": "Sichern" }, { "warte": 600 }, { "shot": "eltern-sichern" },
+  { "klick": "Einstellungen" }, { "warte": 600 }, { "shot": "eltern-einstellungen" },
+  { "klick": "Listen" }, { "warte": 500 }, { "klick": "Neue Liste" }, { "warte": 700 }, { "shot": "eltern-neu" }
+]

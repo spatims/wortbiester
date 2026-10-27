@@ -293,7 +293,9 @@ function setzeDabei(id, sollMit) {
 function figur(wort, farbe) {
   const rec = ctx.store.record(wort);
   const zustand = ctx.store.state().biester?.[wort.id];
-  if (zustand && typeof ctx.biester?.biestFor === 'function') {
+  // Gefangen ist ein Wort, sobald es die erste Box erreicht hat (so zeigt es auch das Ergebnis).
+  // Der Biest-Zustand (Seltenheit, Hut, Muster) kommt mit dem ersten Ei dazu.
+  if ((zustand || (rec?.box ?? 0) >= 1) && typeof ctx.biester?.biestFor === 'function') {
     try {
       return { ...ctx.biester.biestFor(wort, rec, zustand, farbe), gefangen: true };
     } catch { /* Silhouette */ }

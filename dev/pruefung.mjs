@@ -144,6 +144,7 @@ async function lauf(name, width, height, mobile) {
     console.log(`Screenshot: ${out}/${sname}.png`);
   };
   for (const s of schritte) {
+    await evaluate(`if (!window.__wbKlick) { ${HILFEN} }; 'ok'`);   // nach einem Neuladen neu einhängen
     if (s.klick) { const r = await evaluate(`__wbKlick(${JSON.stringify(s.klick)})`); if (r == null) console.log(`  ${name}: Klick „${s.klick}“ fehlgeschlagen`); await sleep(400); }
     if (s.js) await evaluate(s.js);
     if (s.warte) await sleep(s.warte);

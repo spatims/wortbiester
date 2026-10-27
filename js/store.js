@@ -165,7 +165,7 @@ export function hatch(rarity, candidateWordIds, speciesForZier, rng = Math.rando
 export function addCoins(n) { st.coins += n; save(); }
 export function spend(n) { if (st.coins < n) return false; st.coins -= n; save(); return true; }
 export function own(itemId) { if (!st.shop.owned.includes(itemId)) st.shop.owned.push(itemId); save(); }
-export function setBegleiter(ids) { st.begleiter = ids.slice(0, 3).filter((id) => st.biester[id]); save(); }
+export function setBegleiter(ids) { st.begleiter = ids.slice(0, 3).filter((id) => st.biester[id] || (st.words[id]?.box ?? 0) >= 1); save(); }
 export function setBiestLook(id, { hat, skin }) { if (st.biester[id]) { if (hat !== undefined) st.biester[id].hat = hat; if (skin !== undefined) st.biester[id].skin = skin; save(); } }
 
 const day = (d = new Date()) => d.toDateString();
