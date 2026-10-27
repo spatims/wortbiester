@@ -16,7 +16,7 @@ const out = process.argv[3] || new URL('./shots/', import.meta.url).pathname;
 mkdirSync(out, { recursive: true });
 
 const port = 9000 + Math.floor(Math.random() * 500);
-const chrome = spawn('chromium', [
+const chrome = spawn(process.env.CHROME_BIN || 'chromium', [
   '--headless=new', '--no-sandbox', '--disable-gpu', `--remote-debugging-port=${port}`,
   '--user-data-dir=' + out + '/profil', '--no-first-run', ...(process.env.FLAGS ? process.env.FLAGS.split(' ') : []), 'about:blank',
 ], { stdio: 'ignore' });
