@@ -75,9 +75,10 @@ export function play(name) {
   if (!an) return;
   const c = unlock();
   if (!c) return;
-  const laut = ruhe() ? 0.4 : 1;
+  // Spitzen liegen bei 0,04–0,08; mal 3,2 ergibt hörbare, aber weiche Töne (Laptop-Lautsprecher, Tablet).
+  const laut = ruhe() ? 1.2 : 3.2;
   const p = (x) => x * laut;
-  if (name === 'tipp') ton(740, 0.045, 'sine', p(0.07));
+  if (name === 'tipp') ton(740, 0.045, 'sine', p(0.04));
   else if (name === 'richtig') { ton(523.25, 0.12, 'sine', p(0.08)); tonAb(659.25, 0.14, 'sine', p(0.08), 0.09); }
   else if (name === 'falsch') ton(98, 0.2, 'triangle', p(0.04), 70);
   else if (name === 'muenze') { ton(988, 0.09, 'sine', p(0.06)); tonAb(1318, 0.1, 'sine', p(0.05), 0.07); }
