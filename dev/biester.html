@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wortbiester · Schau dich um</title>
+<style>
+@font-face{font-family:Nunito;src:url('../fonts/nunito-latin-wght.woff2')}@font-face{font-family:Fredoka;src:url('../fonts/fredoka-latin-wght.woff2')}
+*{box-sizing:border-box}body{margin:0;padding:28px;background:#141a26;color:#f3f5f9;font:18px Nunito,sans-serif}h1,h2{font-family:Fredoka,sans-serif;font-weight:550}h1{margin:0}p{color:#aeb8cc}header{max-width:1100px;margin:auto}fieldset{display:flex;flex-wrap:wrap;gap:12px;border:0;padding:0;margin:24px 0}label{display:grid;gap:6px}select,button{font:inherit;min-height:56px;min-width:56px;border:2px solid #34405a;border-radius:14px;background:#263044;color:#f3f5f9;padding:10px 16px}button{align-self:end;cursor:pointer}button[aria-pressed=true]{background:#ff9f43;color:#141a26}.species{max-width:1100px;margin:36px auto}h2{margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(6,minmax(138px,1fr));gap:12px}.card{background:#1c2433;border-radius:20px;padding:12px;text-align:center;display:flex;align-items:center;flex-direction:column;gap:4px}.card p{font-size:15px;margin:0}.card canvas{max-width:100%;height:auto!important}small{color:#aeb8cc}@media(max-width:950px){.grid{grid-template-columns:repeat(3,minmax(130px,1fr))}}@media(max-width:500px){body{padding:16px}.grid{grid-template-columns:repeat(2,minmax(125px,1fr))}}
+</style>
+<header>
+<h1>Die Wortbiester</h1>
+<p>Zwölf Arten, sechs Stufen, drei Seltenheiten. Such dir eine Stimmung aus.</p>
+<fieldset aria-label="So sehen deine Biester aus">
+<label>Stimmung<select id="mood"><option value="ruhig">Ganz ruhig</option><option value="jubel">Juhu</option><option value="ducken">Kopf einziehen</option><option value="hungrig">Hunger</option><option value="ei">Noch im Ei</option></select></label>
+<label>Hut<select id="hat"><option value="">Ohne Hut</option><option value="muetze">Mütze</option><option value="krone">Krone</option><option value="hut">Hut</option><option value="brille">Brille</option><option value="schleife">Schleife</option><option value="helm">Helm</option></select></label>
+<label>Muster<select id="skin"><option value="">Ohne Muster</option><option value="streifen">Streifen</option><option value="punkte">Punkte</option><option value="flecken">Flecken</option><option value="nacht">Nacht</option></select></label>
+<label>Größe<select id="size"><option>48</option><option selected>96</option><option>160</option></select></label>
+<button id="quiet" type="button" aria-pressed="false">Ruhe</button>
+</fieldset>
+<p id="status" role="status"></p>
+</header>
+<main id="gallery"></main>
+<script type="module">
+import { SPECIES, STAGE_NAMES } from '../js/core/biester.js';
+import { biestCanvas, animateBiest } from '../js/render/biest.js';
+const $=id=>document.getElementById(id);
+const colors=['#6fcf6a','#ff7a59','#6dd3ff','#c47cff','#f2c879','#4fa3ff'];
+const rarities=[['gewoehnlich','gewöhnlich'],['selten','selten'],['episch','episch']];
+let stops=[];
+function render(){
+  stops.forEach(stop=>stop()); stops=[]; $('gallery').replaceChildren();
+  for(const species of SPECIES){
+    const section=document.createElement('section');section.className='species';
+    const title=document.createElement('h2');title.textContent=species.name;section.append(title);
+    const grid=document.createElement('div');grid.className='grid';section.append(grid);
+    for(const [rarity,label] of rarities) for(let stage=0;stage<6;stage++){
+      const biest={species:species.id,stage,rarity,color:colors[species.id%6],hat:$('hat').value,skin:$('skin').value,name:species.name};
+      const card=document.createElement('article');card.className='card';
+      const canvas=biestCanvas(biest,{size:Number($('size').value)});
+      canvas.setAttribute('aria-label',`${species.name}, ${STAGE_NAMES[stage]}, ${label}`);
+      const caption=document.createElement('p');caption.textContent=STAGE_NAMES[stage];
+      const badge=document.createElement('small');badge.textContent=label;
+      card.append(canvas,caption,badge);grid.append(card);
+      stops.push(animateBiest(canvas,biest,()=>$('mood').value));
+    }
+    $('gallery').append(section);
+  }
+  $('status').textContent='216 Biester sind da. Wilde Biester verraten ihren Schmuck noch nicht.';
+}
+for(const id of ['mood','hat','skin','size']) $(id).addEventListener('change',render);
+$('quiet').addEventListener('click',()=>{
+  const quiet=document.documentElement.classList.toggle('ruhe');
+  $('quiet').setAttribute('aria-pressed',String(quiet));
+});
+window.addEventListener('pagehide',()=>stops.forEach(stop=>stop()));
+render();
+</script>
+</html>
