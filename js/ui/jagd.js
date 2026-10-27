@@ -24,7 +24,7 @@
 // 10. Boss-Figur: stage wird auf 0 gesetzt und beim Sieg auf 1 (Stimmung ei).
 //     animateBiest soll das Objekt je Frame lesen. Zusätzlich ein Ei-Symbol,
 //     falls die Zeichnung die Stufe puffert.
-import { animateBiest } from '../render/biest.js';
+import { animateBiest, biestCanvas } from '../render/biest.js';
 import {
   el, knopf, kopfzeile, modal, muenzflug, muenzenWeg, block, setzeRevier,
 } from './teile.js';
@@ -712,7 +712,9 @@ function baue(root, ctx, lebendig) {
       text: eggs.length ? 'Eier warten im Beutel.' : (coins ? 'Die Münzen warten im Beutel.' : 'Der Beutel ist leer.'),
     });
     buehne.replaceChildren(el('div', { class: 'lager' }, [
-      el('div', { class: 'feuer-bild', aria: { hidden: 'true' } }),
+      el('div', { class: 'feuer-bild', aria: { hidden: 'true' } }, [
+        el('span', { class: 'feuer-schein' }), el('span', { class: 'flamme-a' }), el('span', { class: 'flamme-b' }), el('span', { class: 'flamme-c' }),
+      ]),
       el('h2', { text: 'Lagerfeuer' }),
       el('p', { class: 'zahl', text: `${coins} Münzen` }),
       eggs.length ? el('div', { class: 'ei-reihe' }, eiOffen) : null,
@@ -734,11 +736,14 @@ function baue(root, ctx, lebendig) {
     handle(hunt.campfire(choice));
   }
 
+  let eiZaehler = 0;
   function eiSymbol(rarity) {
     const klasse = rarity === 'episch' ? 'episch' : rarity === 'selten' ? 'selten' : 'gewoehnlich';
-    return el('span', { class: `ei ${klasse}` }, [
-      el('span', { class: 'ei-name', text: seltenheit(rarity) }),
-    ]);
+    // Echtes Ei aus der Biest-Zeichnung; die Art ist noch geheim, deshalb reihum.
+    const biest = { species: (eiZaehler++) % 12, stage: 1, rarity: klasse, color: getComputedStyle(document.documentElement).getPropertyValue('--revier').trim() || '#6fcf6a', hat: null, skin: null, name: '' };
+    let bild;
+    try { bild = biestCanvas(biest, { size: 72, mood: 'ei' }); } catch { bild = el('span', { class: 'flamme-form' }); }
+    return el('span', { class: `ei ${klasse}` }, [bild, el('span', { class: 'ei-name', text: seltenheit(rarity) })]);
   }
 
   function richteBoss(word, boss) {

@@ -9,6 +9,7 @@ const DATEIEN = [
   './js/ui/heute.js', './js/ui/jagd.js', './js/ui/rudel.js', './js/ui/laden.js', './js/ui/eltern.js', './js/ui/teile.js',
   './fonts/nunito-latin-wght.woff2', './fonts/fredoka-latin-wght.woff2',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
+  './listen/orbit-1-smaragd-nebel.txt', './listen/orbit-2-magma-guertel.txt', './listen/orbit-3-tiefen-vakuum.txt',
 ];
 
 self.addEventListener('install', (e) => {

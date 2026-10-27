@@ -8,7 +8,7 @@
 //
 // Vorher: python3 -m http.server 8766  (oder npm start) im Projektordner.
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 const url = process.argv[2] || 'http://127.0.0.1:8766/';
@@ -60,23 +60,92 @@ await send('Runtime.enable');
 await send('Network.enable');
 await send('Page.enable');
 
-async function shot(name, width, height, mobile) {
+// Optionen (Umgebungsvariablen, damit die Positionsargumente bleiben):
+//   ZUSTAND=dev/zustand/orbit.json   → wird vor dem Laden als localStorage „wortbiester.v1“ gesetzt
+//   SCHRITTE=dev/schritte/jagd.json  → Liste von Schritten nach dem Laden, je Format:
+//       { "klick": "Jagd starten" }   Element mit diesem sichtbaren Text antippen (button/.knopf/.block zuerst)
+//       { "js": "…" }                 Ausdruck ausführen (await erlaubt)
+//       { "warte": 800 }              Millisekunden warten
+//       { "shot": "name" }            Screenshot name-quer.png bzw. name-hoch.png
+//       { "loese": 1 }                aktuelle Aufgabe über window.wortbiester richtig lösen
+//   GANZ=1                           → Screenshot über die ganze Seitenhöhe
+//   NUR=quer|hoch                    → nur ein Format
+const zustand = process.env.ZUSTAND ? readFileSync(process.env.ZUSTAND, 'utf8') : null;
+const schritte = process.env.SCHRITTE ? JSON.parse(readFileSync(process.env.SCHRITTE, 'utf8')) : [];
+const ganz = !!process.env.GANZ;
+const formate = [['quer', 1180, 820, false], ['hoch', 390, 844, true]].filter((f) => !process.env.NUR || f[0] === process.env.NUR);
+
+const evaluate = async (expression) => {
+  const r = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
+  if (r.result?.exceptionDetails) probleme.push(`schritt: ${r.result.exceptionDetails.exception?.description || r.result.exceptionDetails.text}`);
+  return r.result?.result?.value;
+};
+
+const HILFEN = `
+window.__wbKlick = (text) => {
+  const alle = [...document.querySelectorAll('button, .knopf, .block, [role=button], a')];
+  const t = (e) => (e.innerText || e.textContent || '').trim();
+  const el = alle.find((e) => t(e) === text) || alle.find((e) => t(e).startsWith(text)) || [...document.querySelectorAll('*')].find((e) => e.children.length === 0 && t(e) === text);
+  if (!el) throw new Error('kein Element mit Text „' + text + '“');
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true })); el.click();
+  return t(el);
+};
+window.__wbLoese = async () => {
+  const ctx = window.wortbiester; const hunt = ctx?.hunt; if (!hunt) throw new Error('keine Jagd aktiv');
+  const st = hunt.state(); const task = st.task;
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+  if (st.phase === 'lagerfeuer') { __wbKlick('Beute sichern'); return 'lagerfeuer'; }
+  if (!task) return 'keine Aufgabe (' + st.phase + ')';
+  if (task.type === 'kennenlernen') { __wbKlick('Verstanden'); return 'kennenlernen'; }
+  const klickBlock = (text, benutzt) => {
+    const bl = [...document.querySelectorAll('.block, .antworten button, .antworten .knopf, button')].filter((b) => !benutzt.has(b) && (b.innerText || b.textContent).replace(/\\u00a0/g, ' ') === text && !b.disabled);
+    if (!bl.length) throw new Error('Block „' + text + '“ nicht gefunden'); benutzt.add(bl[0]); bl[0].dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); bl[0].click();
+  };
+  const items = task.type === 'blitz' ? task.items : [task];
+  for (const it of items) {
+    const benutzt = new Set();
+    if (it.options) { klickBlock(it.options.find((o) => o.correct).text, benutzt); await pause(900); }
+    else if (it.target) { for (const t of it.target) { klickBlock(t, benutzt); await pause(180); } await pause(900); }
+  }
+  return task.type;
+};`;
+
+async function lauf(name, width, height, mobile) {
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile });
   await send('Emulation.setTouchEmulationEnabled', { enabled: mobile });
+  if (zustand) {
+    await send('Page.navigate', { url });
+    await sleep(300);
+    await evaluate(`localStorage.setItem('wortbiester.v1', ${JSON.stringify(zustand)}); 'ok'`);
+  }
   await send('Page.navigate', { url });
   await sleep(1500);
-  const { result } = await send('Page.captureScreenshot', { format: 'png' });
-  writeFileSync(`${out}/${name}.png`, Buffer.from(result.data, 'base64'));
-  const txt = await send('Runtime.evaluate', { expression: 'document.body.innerText.slice(0, 400)', returnByValue: true });
-  return txt.result?.result?.value || '';
+  await evaluate(HILFEN + '; "ok"');
+  const shot = async (sname) => {
+    const opts = { format: 'png' };
+    if (ganz) {
+      const m = await send('Page.getLayoutMetrics');
+      const h = Math.ceil(m.result.cssContentSize.height);
+      opts.clip = { x: 0, y: 0, width, height: h, scale: 1 };
+      opts.captureBeyondViewport = true;
+    }
+    const { result } = await send('Page.captureScreenshot', opts);
+    writeFileSync(`${out}/${sname}.png`, Buffer.from(result.data, 'base64'));
+    console.log(`Screenshot: ${out}/${sname}.png`);
+  };
+  for (const s of schritte) {
+    if (s.klick) { const r = await evaluate(`__wbKlick(${JSON.stringify(s.klick)})`); if (r == null) console.log(`  ${name}: Klick „${s.klick}“ fehlgeschlagen`); await sleep(400); }
+    if (s.js) await evaluate(s.js);
+    if (s.warte) await sleep(s.warte);
+    if (s.shot) await shot(`${s.shot}-${name}`);
+    if (s.loese) { for (let i = 0; i < s.loese; i++) { const r = await evaluate('__wbLoese()'); console.log(`  ${name}: gelöst ${r}`); await sleep(500); } }
+  }
+  await shot(name);
+  const txt = await evaluate('document.body.innerText.slice(0, 300)');
+  console.log(`Sichtbarer Text (${name}):`, JSON.stringify((txt || '').slice(0, 200)));
 }
 
-const quer = await shot('quer', 1180, 820, false);
-const hoch = await shot('hoch', 390, 844, true);
-
-console.log(`Screenshots: ${out}/quer.png  ${out}/hoch.png`);
-console.log('Sichtbarer Text (quer):', JSON.stringify(quer.slice(0, 200)));
-console.log('Sichtbarer Text (hoch):', JSON.stringify(hoch.slice(0, 200)));
+for (const f of formate) await lauf(...f);
 const einmalig = [...new Set(probleme)];
 if (einmalig.length) {
   console.log(`\n${einmalig.length} Problem(e):`);

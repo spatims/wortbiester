@@ -75,6 +75,7 @@ export function applySettings() {
   audio.setEnabled(!!s.ton);
 }
 ctx.applySettings = applySettings;
+window.wortbiester = ctx;   // für dev/pruefung.mjs und die Konsole
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('./sw.js').catch(() => { /* offline-Start dann eben nicht */ });

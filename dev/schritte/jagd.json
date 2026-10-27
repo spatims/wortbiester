@@ -1,0 +1,8 @@
+[
+  { "shot": "heute" },
+  { "klick": "Jagd starten" }, { "warte": 900 }, { "shot": "aufgabe-1" },
+  { "loese": 4 }, { "warte": 600 }, { "shot": "lagerfeuer" },
+  { "loese": 6 }, { "warte": 600 }, { "shot": "mitte" },
+  { "loese": 9 }, { "warte": 900 }, { "shot": "boss" },
+  { "loese": 4 }, { "warte": 2500 }, { "shot": "ergebnis" }
+]
