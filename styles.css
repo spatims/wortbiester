@@ -356,3 +356,135 @@ html.lesehilfe .satz, html.lesehilfe .karte { line-height: 1.6; letter-spacing: 
   from { transform: scale(0.4); }
   to { transform: scale(1); }
 }
+
+/* Paket C2: Rudel, Laden, Eltern. Nur angehängt. */
+
+.rudel p, .laden p, .eltern p { margin: 0; }
+.leise { color: var(--text-2); margin: 0; }
+.meldungs-fehler, .vorschau-fehler { color: var(--fehler); margin: 0; }
+
+.schirm-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.schirm-titel { flex: 1; min-width: min(100%, 220px); display: flex; flex-direction: column; gap: 4px; }
+.schirm-kopf h1 { font-size: 1.6rem; }
+.muenzstand { color: var(--muenze); font-size: 28px; }
+
+.filter-zeile { display: flex; flex-wrap: wrap; gap: 12px; }
+.knopf.ist-aktiv { outline: 3px solid var(--glut); outline-offset: 2px; }
+.knopf.gedaempft,
+.knopf:disabled {
+  background: var(--grund);
+  color: var(--text-2);
+  box-shadow: none;
+}
+.knopf.gedaempft:active,
+.knopf:disabled:active { transform: none; box-shadow: none; }
+
+.rudel-liste, .revier-block, .angebot-block, .formular, .eltern-liste, .listen-stand, .mitgeliefert, .vorschau, .geschluepft {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.revier-titel { border-left: 8px solid currentColor; padding-left: 12px; }
+.eltern-liste { border-left: 8px solid var(--linie); }
+.liste-meta { color: var(--text-2); }
+
+.kachel-raster, .artikel-raster {
+  display: grid;
+  gap: 12px;
+}
+.kachel-raster { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+.artikel-raster { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+.kachel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ziel);
+  padding: 8px;
+  border-radius: var(--radius-karte);
+  background: var(--grund-2);
+  box-shadow: 0 4px 0 var(--schatten);
+}
+.kachel.wild { background: var(--grund); }
+.kachel:active { transform: translateY(4px); box-shadow: 0 0 0 var(--schatten); }
+.kachel:focus-visible, .feld:focus-visible { outline: 3px solid var(--schild); outline-offset: 2px; }
+.kachel-name { font-family: var(--titel); text-align: center; word-break: break-word; }
+.kachel-stufe, .kachel-dabei { color: var(--text-2); font-size: 0.9rem; text-align: center; }
+.kachel-dabei { color: var(--glut); }
+.sprechblase {
+  align-self: flex-end;
+  background: var(--text);
+  color: var(--schatten);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.artikel .knopf { width: 100%; margin-top: auto; }
+.formular > .knopf { width: 100%; }
+.geschluepft .knopf { align-self: flex-start; min-width: 160px; }
+
+.modal.kann-scrollen { overflow: auto; place-items: start center; }
+.modal-karte.biest-karte { width: min(480px, 100%); }
+.karte-koerper, .anziehen-kasten {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: center;
+}
+.karte-koerper .knopf, .anziehen-kasten .knopf { width: 100%; }
+.stufen-zeile { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; }
+.punkte { display: flex; gap: 8px; }
+.punkt { width: 14px; height: 14px; border-radius: 50%; background: var(--linie); }
+.punkt.an { background: var(--glut); }
+
+.reiter-leiste, .aktionen, .laengen, .schalter-zeile { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.reiter-leiste .knopf { flex: 1 1 140px; }
+.aktionen .knopf { flex: 1 1 160px; }
+.schalter-zeile span { flex: 1; min-width: 140px; }
+.laengen .knopf, .schalter-zeile .knopf { flex: 0 0 auto; min-width: 88px; }
+.reiter-inhalt, .kennzahl, .tor { display: flex; flex-direction: column; gap: 12px; }
+.tor { width: min(100%, 560px); margin: 0 auto; }
+.tor-frage { font-size: 40px; text-align: center; }
+.tor-wahl .knopf { width: 100%; }
+
+.feld {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--ziel);
+  padding: 12px 14px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--grund-3);
+  color: var(--text);
+  font: inherit;
+}
+textarea.feld { min-height: 180px; resize: vertical; line-height: 1.45; }
+.datei-versteckt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+.formular { position: relative; }
+
+.tabelle-scroll { overflow-x: auto; max-width: 100%; }
+.wort-tabelle { width: 100%; border-collapse: collapse; }
+.wort-tabelle th, .wort-tabelle td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--linie);
+  word-break: break-word;
+}
